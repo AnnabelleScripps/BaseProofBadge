@@ -4,6 +4,8 @@ import { useAccount, useConnect, useDisconnect, useChainId, useSwitchChain } fro
 import { base, baseSepolia } from 'wagmi/chains';
 import { useState, useEffect } from 'react';
 
+const SUPPORTED_CHAINS = [base.id, baseSepolia.id] as const;
+
 export function ConnectWallet() {
   const { address, isConnected, chain } = useAccount();
   const { connect, connectors, isPending } = useConnect();
@@ -13,11 +15,10 @@ export function ConnectWallet() {
   const [showMenu, setShowMenu] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(false);
 
-  const supportedChains = [base.id, baseSepolia.id];
-
   useEffect(() => {
     if (isConnected && chain) {
-      setWrongNetwork(!supportedChains.includes(chain.id));
+      const isSupported = SUPPORTED_CHAINS.some(id => id === chain.id);
+      setWrongNetwork(!isSupported);
     }
   }, [isConnected, chain]);
 
@@ -26,8 +27,8 @@ export function ConnectWallet() {
     setShowMenu(false);
   };
 
-  const handleSwitchNetwork = (chainId: number) => {
-    switchChain({ chainId });
+  const handleSwitchNetwork = (targetChainId: typeof SUPPORTED_CHAINS[number]) => {
+    switchChain({ chainId: targetChainId });
   };
 
   if (!isConnected) {
