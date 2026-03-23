@@ -1,15 +1,25 @@
 import { http, createConfig } from 'wagmi';
-import { baseSepolia } from 'wagmi/chains';
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { base, baseSepolia } from 'wagmi/chains';
+import { injected, metaMask, coinbaseWallet } from 'wagmi/connectors';
 
-export const config = getDefaultConfig({
-  appName: 'BaseProofBadge',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
-  chains: [baseSepolia],
+// No Project ID needed! Using only injected connectors
+export const config = createConfig({
+  chains: [base, baseSepolia],
+  connectors: [
+    injected({ 
+      target: 'metaMask',
+      shimDisconnect: true,
+    }),
+    injected({
+      target: 'coinbaseWallet', 
+      shimDisconnect: true,
+    }),
+    // Fallback for any injected wallet
+    injected({ shimDisconnect: true }),
+  ],
   transports: {
-    [baseSepolia.id]: http(
-      process.env.NEXT_PUBLIC_RPC_URL || 'https://sepolia.base.org'
-    ),
+    [base.id]: http(),
+    [baseSepolia.id]: http(),
   },
   ssr: true,
 });

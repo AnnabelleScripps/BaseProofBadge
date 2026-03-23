@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectWallet } from '@/components/ConnectWallet';
 import MintBadge from '@/components/MintBadge';
 import RecordAction from '@/components/RecordAction';
 import UserProfile from '@/components/UserProfile';
@@ -22,7 +22,7 @@ export default function Home() {
             </div>
             <h1 className="text-xl font-bold">BaseProofBadge</h1>
           </div>
-          <ConnectButton />
+          <ConnectWallet />
         </div>
       </header>
 
@@ -38,7 +38,9 @@ export default function Home() {
           {!isConnected && (
             <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-8">
               <p className="text-gray-400 mb-4">Connect your wallet to get started</p>
-              <ConnectButton />
+              <div className="flex justify-center">
+                <ConnectWallet />
+              </div>
             </div>
           )}
         </div>
