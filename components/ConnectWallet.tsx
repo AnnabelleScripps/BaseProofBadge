@@ -7,7 +7,6 @@ import {
   useDisconnect,
   useSwitchChain,
 } from 'wagmi';
-import { base } from 'wagmi/chains';
 import { CHAIN_ID } from '@/lib/contract';
 
 export function ConnectWallet() {
@@ -28,10 +27,6 @@ export function ConnectWallet() {
   const handleConnect = (connector: any) => {
     connect({ connector });
     setShowMenu(false);
-  };
-
-  const handleSwitchNetwork = () => {
-    switchChain({ chainId: CHAIN_ID });
   };
 
   if (!isConnected) {
@@ -58,13 +53,6 @@ export function ConnectWallet() {
                   onClick={() => handleConnect(connector)}
                   className="w-full text-left px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-3 text-white"
                 >
-                  <span>
-                    {connector.name.includes('MetaMask')
-                      ? '🦊'
-                      : connector.name.includes('Coinbase')
-                      ? '🔵'
-                      : '👛'}
-                  </span>
                   <span>{connector.name}</span>
                 </button>
               ))}
@@ -79,7 +67,7 @@ export function ConnectWallet() {
     <div className="flex items-center gap-3">
       {wrongNetwork && (
         <button
-          onClick={handleSwitchNetwork}
+          onClick={() => switchChain({ chainId: CHAIN_ID })}
           className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg text-sm transition-all"
         >
           Switch to Base
