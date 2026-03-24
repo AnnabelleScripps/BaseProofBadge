@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS = '0x4c50dc3b966937e42f43ca0b4e334a0e72464409';
-export const CHAIN_ID = 84532; // Base Sepolia
+export const CHAIN_ID = 8453; // Base
 export const BASE_BUILDER_CODE = 'bc_iejszfyu';
 export const BASE_ENCODED_STRING = '0x62635f69656a737a6679750b0080218021802180218021802180218021';
 
