@@ -1,22 +1,11 @@
-import { http, createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { base } from 'wagmi/chains';
-import { injected } from 'wagmi/connectors';
+import { coinbaseWallet, injected } from 'wagmi/connectors';
+import { APP_NAME } from '@/lib/contract';
 
 export const config = createConfig({
   chains: [base],
-  connectors: [
-    injected({
-      target: 'metaMask',
-      shimDisconnect: true,
-    }),
-    injected({
-      target: 'coinbaseWallet',
-      shimDisconnect: true,
-    }),
-    injected({
-      shimDisconnect: true,
-    }),
-  ],
+  connectors: [coinbaseWallet({ appName: APP_NAME }), injected()],
   transports: {
     [base.id]: http('https://mainnet.base.org'),
   },

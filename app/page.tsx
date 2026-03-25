@@ -1,122 +1,91 @@
 'use client';
 
-import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectWallet } from '@/components/ConnectWallet';
-import MintBadge from '@/components/MintBadge';
-import RecordAction from '@/components/RecordAction';
-import UserProfile from '@/components/UserProfile';
+import { TaskComposer } from '@/components/TaskComposer';
+import { TaskBoard } from '@/components/TaskBoard';
+import {
+  APP_DESCRIPTION,
+  APP_NAME,
+  APP_TRACKING_ID,
+  BASE_BUILDER_CODE,
+  CONTRACT_ADDRESS,
+} from '@/lib/contract';
 
 export default function Home() {
   const { isConnected } = useAccount();
-  const [activeTab, setActiveTab] = useState<'mint' | 'record' | 'profile'>(
-    'mint'
-  );
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <header className="flex items-center justify-between mb-12">
-          <div>
-            <div className="text-sm text-blue-400 font-semibold mb-2">BP</div>
-            <h1 className="text-4xl font-bold">BaseProofBadge</h1>
+    <main className="min-h-screen">
+      <div className="page-shell">
+        <header className="hero-card">
+          <div className="hero-copy">
+            <div className="eyebrow">Base Mini App</div>
+            <h1>{APP_NAME}</h1>
+            <p>{APP_DESCRIPTION}</p>
+            <div className="hero-meta">
+              <span>Task + Note Flow</span>
+              <span>Low-fee Base mainnet writes</span>
+              <span>Event-driven contract reads</span>
+            </div>
           </div>
-          <ConnectWallet />
+          <div className="hero-actions">
+            <ConnectWallet />
+            <div className="meta-panel">
+              <div>
+                <span className="meta-label">Contract</span>
+                <code>{CONTRACT_ADDRESS}</code>
+              </div>
+              <div>
+                <span className="meta-label">Tracking ID</span>
+                <code>{APP_TRACKING_ID}</code>
+              </div>
+              <div>
+                <span className="meta-label">Builder Code</span>
+                <code>{BASE_BUILDER_CODE || 'Pending input'}</code>
+              </div>
+            </div>
+          </div>
         </header>
 
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">
-            On-chain Proof & Badge System
-          </h2>
-          <p className="text-gray-300 max-w-3xl">
-            Generate verifiable badges and record your on-chain actions. Build a
-            transparent, traceable participation history on Base Mainnet.
-          </p>
+        <section className="info-grid">
+          <article className="info-card">
+            <h2>Record concise onchain notes</h2>
+            <p>
+              Every task stores a compressed bytes32 note so the app stays fast,
+              portable, and cheap to update on Base.
+            </p>
+          </article>
+          <article className="info-card">
+            <h2>Update status in one tap</h2>
+            <p>
+              Move tasks from Todo to Doing to Done with direct contract writes
+              using Coinbase Wallet or any injected wallet.
+            </p>
+          </article>
+          <article className="info-card">
+            <h2>Attribution-ready launches</h2>
+            <p>
+              Production metadata, open graph tags, manifest, and transaction
+              tracking are wired for Base mini app distribution.
+            </p>
+          </article>
         </section>
 
-        {!isConnected && (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center mb-10">
-            <p className="text-lg text-gray-300">
-              Connect your wallet to get started
+        {!isConnected ? (
+          <section className="empty-state">
+            <h2>Connect a wallet to start using BaseFlow</h2>
+            <p>
+              You can create a single task, batch import tasks, inspect any task
+              by ID, and update your own task statuses from this page.
             </p>
-          </div>
+          </section>
+        ) : (
+          <section className="workspace-grid">
+            <TaskComposer />
+            <TaskBoard />
+          </section>
         )}
-
-        {isConnected && (
-          <>
-            <div className="flex gap-3 mb-8">
-              <button
-                onClick={() => setActiveTab('mint')}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  activeTab === 'mint'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                Mint Badge
-              </button>
-
-              <button
-                onClick={() => setActiveTab('record')}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  activeTab === 'record'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                Record Action
-              </button>
-
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  activeTab === 'profile'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                My Profile
-              </button>
-            </div>
-
-            <div className="mb-12">
-              {activeTab === 'mint' && <MintBadge />}
-              {activeTab === 'record' && <RecordAction />}
-              {activeTab === 'profile' && <UserProfile />}
-            </div>
-          </>
-        )}
-
-        <section className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-            <h3 className="text-xl font-bold mb-3">Mint Your Badge</h3>
-            <p className="text-gray-300">
-              Receive a unique on-chain NFT badge that serves as your verifiable
-              identity and participation proof.
-            </p>
-          </div>
-
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-            <h3 className="text-xl font-bold mb-3">Record Actions</h3>
-            <p className="text-gray-300">
-              Log your on-chain activities and build a transparent, immutable
-              history of your contributions.
-            </p>
-          </div>
-
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-            <h3 className="text-xl font-bold mb-3">View History</h3>
-            <p className="text-gray-300">
-              Access and verify your complete action history anytime, fully
-              transparent and tamper-proof.
-            </p>
-          </div>
-        </section>
-
-        <footer className="text-center text-sm text-gray-500 border-t border-gray-800 pt-6">
-          <div>Built on Base Mainnet • Powered by BaseProofBadge</div>
-          <div className="mt-2">Contract: 0x4c50...4409</div>
-        </footer>
       </div>
     </main>
   );
