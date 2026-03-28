@@ -34,7 +34,7 @@ function getErrorMessage(error: unknown) {
 
 export function TaskComposer() {
   const { address, chain } = useAccount();
-  const { switchChain } = useSwitchChain();
+  const { switchChainAsync } = useSwitchChain();
   const [taskNote, setTaskNote] = useState('');
   const [batchNotes, setBatchNotes] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -73,20 +73,26 @@ export function TaskComposer() {
     if (txMode === 'batch') setBatchNotes('');
   }, [address, hash, isSuccess, txMode]);
 
-  const ensureBase = () => {
+  const ensureBase = async () => {
     if (!isWrongNetwork) return true;
-    switchChain({ chainId: CHAIN_ID });
-    return false;
+    try {
+      await switchChainAsync({ chainId: CHAIN_ID });
+      return true;
+    } catch (switchError) {
+      setFeedbackType('error');
+      setFeedback(getErrorMessage(switchError));
+      return false;
+    }
   };
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
     if (!address || !taskNote.trim()) return;
     if (!canEncodeTaskContent(taskNote)) {
       setFeedbackType('error');
       setFeedback('Single task note must fit within 32 bytes.');
       return;
     }
-    if (!ensureBase()) return;
+    if (!(await ensureBase())) return;
     setFeedback(null);
     setTxMode('single');
     writeContract({
@@ -98,7 +104,7 @@ export function TaskComposer() {
     });
   };
 
-  const handleBatchCreate = () => {
+  const handleBatchCreate = async () => {
     if (!address || batchItems.length === 0) return;
     const invalid = batchItems.find((item) => !canEncodeTaskContent(item));
     if (invalid) {
@@ -106,7 +112,7 @@ export function TaskComposer() {
       setFeedback(`Batch note "${invalid}" exceeds the bytes32 storage limit.`);
       return;
     }
-    if (!ensureBase()) return;
+    if (!(await ensureBase())) return;
     setFeedback(null);
     setTxMode('batch');
     writeContract({
@@ -192,7 +198,7 @@ export function TaskComposer() {
       {feedback && (
         <div className={`notice-box ${feedbackType ?? ''}`}>
           {feedback}
-          {hash ? (
+          {feedbackType === 'success' && hash ? (
             <>
               <br />
               Tx: {hash}

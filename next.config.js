@@ -4,6 +4,9 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname),
+  experimental: {
+    workerThreads: true,
+  },
   webpack: (config) => {
     config.resolve.fallback = { 
       fs: false, 

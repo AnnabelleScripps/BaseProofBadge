@@ -36,7 +36,7 @@ function getErrorMessage(error: unknown) {
 
 export function TaskBoard() {
   const { address, chain } = useAccount();
-  const { switchChain } = useSwitchChain();
+  const { switchChainAsync } = useSwitchChain();
   const publicClient = usePublicClient({ chainId: CHAIN_ID });
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [queryId, setQueryId] = useState('');
@@ -94,7 +94,7 @@ export function TaskBoard() {
 
   useEffect(() => {
     loadTasks();
-  }, [loadTasks, hash]);
+  }, [loadTasks]);
 
   useEffect(() => {
     if (!error) return;
@@ -111,11 +111,16 @@ export function TaskBoard() {
     loadTasks();
   }, [address, hash, isSuccess, loadTasks]);
 
-  const handleStatusUpdate = (taskId: number, status: number) => {
+  const handleStatusUpdate = async (taskId: number, status: number) => {
     if (!address) return;
     if (chain?.id !== CHAIN_ID) {
-      switchChain({ chainId: CHAIN_ID });
-      return;
+      try {
+        await switchChainAsync({ chainId: CHAIN_ID });
+      } catch (switchError) {
+        setNoticeType('error');
+        setNotice(getErrorMessage(switchError));
+        return;
+      }
     }
     setNotice(null);
     writeContract({

@@ -1,4 +1,5 @@
-const DASHBOARD_API = 'https://base-dashboard-zeta.vercel.app/api/track'
+const DASHBOARD_API = 'https://base-dashboard-zeta.vercel.app/api/track';
+
 export async function trackTransaction(appId, appName, userAddress, txHash) {
   try {
     await fetch(DASHBOARD_API, {
@@ -11,8 +12,8 @@ export async function trackTransaction(appId, appName, userAddress, txHash) {
         tx_hash: txHash,
         timestamp: new Date().toISOString(),
       }),
-    })
+    });
   } catch {
-    // 静默失败，不影响主流程
+    // Silently ignore analytics failures so task flows still complete.
   }
 }
